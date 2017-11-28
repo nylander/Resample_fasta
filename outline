@@ -1,0 +1,16 @@
+
+
+- read fasta file as a stream
+
+- get the first sequence in a Dict (how much memory is required?)
+
+- get the length of the dict
+
+- generate x integers between 0 and seq_length, put in an array X
+
+- select and print the positions in sequence based on positions in X
+
+- read in the next sequence
+
+- select and print the positions in sequence based on positions in X
+
