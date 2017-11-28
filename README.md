@@ -9,6 +9,14 @@ Sample random columns from a set of aligned fasta formatted sequences.
 That is, sample positions in one sequence, then make sure to sample the same
 potitions in all consequtive seuences as well.
 
+Note: Reservoir sampling doesn't seem to fit well for several sequences if sequence file is read as a stream.
+Try to look at hashes instead:
+
+http://troydhanson.github.io/uthash/index.html
+
+https://github.com/attractivechaos/klib
+
+
 On approach that seems fit is ["reservoire sampling"](http://en.wikipedia.org/wiki/Reservoir_sampling): 
 
 >Reservoir sampling is a family of randomized algorithms for randomly choosing k 
@@ -24,7 +32,10 @@ Another approach might be the ["inside-out version of the Fisher-Yates shuffle"]
 - [https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement](https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement)
 - [http://www.geeksforgeeks.org/reservoir-sampling/](http://www.geeksforgeeks.org/reservoir-sampling/)
 - [https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement](https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement)
-- []()
+- [https://gregable.com/2007/10/reservoir-sampling.html](https://gregable.com/2007/10/reservoir-sampling.html)
+- [http://man7.org/linux/man-pages/man3/hsearch.3.html](http://man7.org/linux/man-pages/man3/hsearch.3.html)
+- [https://lemire.me/blog/2013/08/16/picking-n-distinct-numbers-at-random-how-to-do-it-fast/](https://lemire.me/blog/2013/08/16/picking-n-distinct-numbers-at-random-how-to-do-it-fast/)
+
 
 ## Some code
 
