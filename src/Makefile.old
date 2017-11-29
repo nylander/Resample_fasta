@@ -1,8 +1,0 @@
-all: kseq.h mycode.c randsamp.h randsamp.c
-	$(CC) -g -O2 mycode.c randsamp.c -o myprog -lz
-
-clean:
-	rm -f *.o myprog
-
-test: all
-	./myprog infile

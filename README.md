@@ -1,6 +1,6 @@
 # Resample FASTA alignments
 
-- Tue 28 Nov 2017 12:21:56 PM CET
+- Wed 29 Nov 2017 09:28:25 AM CET 
 - JN
 
 ## Description
@@ -12,9 +12,15 @@ potitions in all consequtive seuences as well.
 Note: Reservoir sampling doesn't seem to fit well for several sequences if sequence file is read as a stream.
 Try to look at hashes instead:
 
-http://troydhanson.github.io/uthash/index.html
+- [http://troydhanson.github.io/uthash/index.html](http://troydhanson.github.io/uthash/index.html)
+- [https://github.com/attractivechaos/klib](https://github.com/attractivechaos/klib)
+- [https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm](https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm)
 
-https://github.com/attractivechaos/klib
+
+
+Note: `RAND_MAX`, The value of this macro is an integer constant representing the largest value the rand function can return. In the GNU C Library, it is 2147483647, which is the largest signed integer representable in 32 bits. [source](https://www.gnu.org/software/libc/manual/html_node/ISO-Random.html)
+
+
 
 
 On approach that seems fit is ["reservoire sampling"](http://en.wikipedia.org/wiki/Reservoir_sampling): 
@@ -35,44 +41,41 @@ Another approach might be the ["inside-out version of the Fisher-Yates shuffle"]
 - [https://gregable.com/2007/10/reservoir-sampling.html](https://gregable.com/2007/10/reservoir-sampling.html)
 - [http://man7.org/linux/man-pages/man3/hsearch.3.html](http://man7.org/linux/man-pages/man3/hsearch.3.html)
 - [https://lemire.me/blog/2013/08/16/picking-n-distinct-numbers-at-random-how-to-do-it-fast/](https://lemire.me/blog/2013/08/16/picking-n-distinct-numbers-at-random-how-to-do-it-fast/)
+- [http://www.azillionmonkeys.com/qed/random.html](http://www.azillionmonkeys.com/qed/random.html)
+- [https://www.gnu.org/software/libc/manual/html_node/ISO-Random.html](https://www.gnu.org/software/libc/manual/html_node/ISO-Random.html)
+- []()
+
+
 
 
 ## Some code
 
-    char* array[19];
-    #define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
-    arr[rand() % ARR_SIZE(arr)]
+To print line breaks after some length, use an iterator (i), and use the modulo operator:
 
-    int n = rand()%20; // But, "% 20 can yield non-uniform results"
-    printf("%s\n", array[n]);
-
-
-
-    // Returns an array containing x unique random ints between min and max. (caller must free).
-    // Works by generating x sequential random integers in the range, then 
-    // shuffling them. Add a seed(time) somewhere in caller if you don't want the same 
-    // results every run.
-    // Source: https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement
-
-    #include <stdlib.h>
-    #include <stdint.h>
-    #define MAX_ALLOC ((uint32_t)0x40000000)  //max allocated bytes, fix per platform
-    #define MAX_SAMPLES (MAX_ALLOC/sizeof(uint32_t))
-
-    int* randsamp(uint32_t x, uint32_t min, uint32_t max)
-    {
-       uint32_t r,i=x,*a;
-       if (!x||x>MAX_SAMPLES||x>(max-min+1)) return NULL;
-       a=malloc(x*sizeof(uint32_t));
-       while (i--) {
-          r= (max-min+1-i);
-          a[i]=min+=(r ? rand()%r : 0);
-          min++;
-       }
-       while (x>1) {
-          r=a[i=rand()%x--];
-          a[i]=a[x];
-          a[x]=r;
-       }
-       return a;
+    for (i=0; i<1000; i++) {
+        printf("%20llu ", genrand64_int64());
+        if (i%5==4) printf("\n");
     }
+
+
+
+
+
+    int main(void)
+    {
+        int i;
+        unsigned long long init[4]={0x12345ULL, 0x23456ULL, 0x34567ULL, 0x45678ULL}, length=4;
+        init_by_array64(init, length);
+        printf("1000 outputs of genrand64_int64()\n");
+        for (i=0; i<1000; i++) {
+          printf("%20llu ", genrand64_int64());
+          if (i%5==4) printf("\n");
+        }
+        printf("\n1000 outputs of genrand64_real2()\n");
+        for (i=0; i<1000; i++) {
+          printf("%10.8f ", genrand64_real2());
+          if (i%5==4) printf("\n");
+        }
+        return 0;
+    }
+

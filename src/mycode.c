@@ -1,21 +1,33 @@
-#include <zlib.h>
+#include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <zlib.h>
 #include "kseq.h"
-#include "randsamp.h"
+#include "dict.h"
+#include "twister.h"
+//#include "khash.h"
+//#include "SFMT.h"
+//#include "mt19937-64.h"
 
-#define XFRAC 0.5
+#define XFRAC 0.5  // fraction to sample
+#define WRAP 60    // line wrap for fasta seq
 
 KSEQ_INIT(gzFile, gzread)
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
     gzFile fp;
     kseq_t *seq;
-    long int seqlength;
-    int i;
+    Dict d;
+    long int seqlength; // sizeof( long int ) is 8 bytes
+    long int i;
+    long int j;
     long int m;
     long int samplesize;
-    long int *ar;
+    long int *seqnrarray;
+    //long int *samplenrarray;
 
     if (argc == 1) {
         fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
@@ -31,38 +43,67 @@ int main(int argc, char *argv[])
     // Read the first sequence and get the length
     seq = kseq_init(fp);
     seqlength = kseq_read(seq);
-    printf("Seq length: %ld\n", seqlength);
-    getchar();
-    
-    samplesize = (int)(seqlength * XFRAC);
 
-    printf("Sample size: %ld\n", samplesize);
-    getchar();
+    samplesize = (long int)(seqlength * XFRAC);
 
-    srand(time(NULL));
+    // Generate array of random integers for the whole seq 
+    //seedMT(4357U);
+    seedMT(time(NULL));
 
-    ar = randsamp(samplesize, 0, seqlength);
-    for ( i = 0; i < samplesize; i++ ) {
-        printf("Random nr: %ld\n", ar[i]);
+    seqnrarray = malloc(sizeof(long int) * seqlength);
+    if (!seqnrarray) {
+        perror("Error allocating memory");
+        abort();
     }
-    
 
+    for(j=0; j < seqlength; j++) {
+        seqnrarray[j] = randomMT();
+    }
     getchar();
 
-    //if (seq->name.s) printf(">%s\n", seq->name.s);
-    //if (seq->seq.s) printf("Sequence: %s\n", seq->seq.s);
-    //getchar();
+    // create a dictionary
+    d = DictCreate();
+
+    for (i=0; i < seqlength; i++) {
+        DictInsert(d, seqnrarray[i], seq->seq.s[i]);
+    }
+
+
+    //samplenrarray = malloc(sizeof(long int) * samplesize);
+    //if (!samplenrarray) {
+    //    perror("Error allocating memory");
+    //    abort();
+    //}
+
+    // Print first sequence
+    if (seq->name.s) printf(">%s\n", seq->name.s);
+    if (seq->seq.s) {
+        for (i=0; i < seqlength; i++) {
+            printf("%c", seq->seq.s[i]);
+            if (i > 0) {
+                if (i%WRAP==0) printf("\n");
+            }
+        }
+        printf("\n");
+    }
 
     // Read the rest of the sequences
     while ((m = kseq_read(seq)) >= 0) {
         if (seq->name.s) printf(">%s\n", seq->name.s);
-        //if (seq->seq.s) printf("Sequence: %s\n", seq->seq.s);
-        printf("Seq length: %ld\n", m);
+        for (i=0; i < seqlength; i++) {
+            printf("%c", seq->seq.s[i]);
+            if (i > 0) {
+                if (i%WRAP==0) printf("\n");
+            }
+        }
+        printf("\n");
     }
 
     kseq_destroy(seq);
     gzclose(fp);
-    free(ar);
+    free(seqnrarray);
+    //free(samplenrarray);
 
-    return 0;
+    return(EXIT_SUCCESS);
 }
+

@@ -1,21 +1,25 @@
 CC = gcc
-CFLAGS = -Wall -O2
+#INCLUDEDIR = SFMT
+#CFLAGS = -Wall -O3 -msse2 -DHAVE_SSE2 -DSFMT_MEXP=2281 -I$(INCLUDEDIR)
+CFLAGS = -Wall -O3
 LDFLAGS = -lz
-DEPS = kseq.h randsamp.h
-OBJ = mycode.o randsamp.o
+DEPS = kseq.h twister.h SFMT.h dict.h
+OBJ = mycode.o dict.o 
+BIN = myprog
 
 .PHONY: all clean test
 
-all: myprog
+all: $(BIN)
 
-myprog: $(OBJ)
+$(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 
 clean:
-	rm -f *.o myprog
+	rm -f $(OBJ) $(BIN)
 
 test: all
-	./myprog infile
+	./$(BIN) infile
+
