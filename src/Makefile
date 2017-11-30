@@ -3,8 +3,8 @@ CC = gcc
 #CFLAGS = -Wall -O3 -msse2 -DHAVE_SSE2 -DSFMT_MEXP=2281 -I$(INCLUDEDIR)
 CFLAGS = -Wall -O3
 LDFLAGS = -lz
-DEPS = kseq.h twister.h SFMT.h dict.h
-OBJ = mycode.o dict.o 
+DEPS = kseq.h twister.h SFMT.h quicksort.h
+OBJ = mycode.o 
 BIN = myprog
 
 .PHONY: all clean test

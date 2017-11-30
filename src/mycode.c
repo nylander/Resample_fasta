@@ -1,3 +1,21 @@
+/* 
+ *
+ * Description: Subsample a fraction (default 0.5)
+ * of an alignment in fasta format.
+ *
+ * Usage: ./prog infile.fas > outfile.fas
+ *
+ * Version: Thu 30 Nov 2017 06:24:08 PM CET
+ * By: Johan.Nylander@{nbis|nrm}.se
+ *
+ * TODO: rewrite so user can ask for a specific
+ * sequence output length. Now I read the first
+ * sequence separately in order to get the length
+ * and the fraction.
+ *
+ *
+*/
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,11 +23,8 @@
 #include <time.h>
 #include <zlib.h>
 #include "kseq.h"
-#include "dict.h"
 #include "twister.h"
-//#include "khash.h"
-//#include "SFMT.h"
-//#include "mt19937-64.h"
+#include "quicksort.h"
 
 #define XFRAC 0.5  // fraction to sample
 #define WRAP 60    // line wrap for fasta seq
@@ -20,14 +35,11 @@ int main(int argc, char *argv[]) {
 
     gzFile fp;
     kseq_t *seq;
-    Dict d;
-    long int seqlength; // sizeof( long int ) is 8 bytes
-    long int i;
-    long int j;
-    long int m;
+    long int seqlength;
+    long int c, i, j, n;
+    int k;
     long int samplesize;
-    long int *seqnrarray;
-    //long int *samplenrarray;
+    long int *random;
 
     if (argc == 1) {
         fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
@@ -42,58 +54,67 @@ int main(int argc, char *argv[]) {
 
     // Read the first sequence and get the length
     seq = kseq_init(fp);
-    seqlength = kseq_read(seq);
+    seqlength = kseq_read(seq); // does kseq read in the whole seq or only provide a stream?
 
     samplesize = (long int)(seqlength * XFRAC);
 
-    // Generate array of random integers for the whole seq 
-    //seedMT(4357U);
-    seedMT(time(NULL));
+    // Generate sorted array of random integers of size=sample size
+    seedMT(time(NULL)); //seedMT(4357U);
 
-    seqnrarray = malloc(sizeof(long int) * seqlength);
-    if (!seqnrarray) {
-        perror("Error allocating memory");
+    random = malloc(sizeof(long int) * samplesize);
+
+    if (!random) {
+        perror("Error allocating memory for random array");
         abort();
     }
 
-    for(j=0; j < seqlength; j++) {
-        seqnrarray[j] = randomMT();
-    }
-    getchar();
-
-    // create a dictionary
-    d = DictCreate();
-
-    for (i=0; i < seqlength; i++) {
-        DictInsert(d, seqnrarray[i], seq->seq.s[i]);
+    for(i=0; i < samplesize; i++) {
+        random[i] = randomMT();
     }
 
+    // sort random in place.
+    n = sizeof(random) / sizeof(random[0]);
 
-    //samplenrarray = malloc(sizeof(long int) * samplesize);
-    //if (!samplenrarray) {
-    //    perror("Error allocating memory");
-    //    abort();
-    //}
+    quicksort(random, n);
 
     // Print first sequence
     if (seq->name.s) printf(">%s\n", seq->name.s);
     if (seq->seq.s) {
-        for (i=0; i < seqlength; i++) {
-            printf("%c", seq->seq.s[i]);
-            if (i > 0) {
-                if (i%WRAP==0) printf("\n");
+        k=0;
+        for (j=c=0; c < samplesize; ++c) {
+            for ( ; j < random[c] ; ++j) {
+                //getchar();
+                //xxx(seq->seq.s[j]); // what is correct function xxx to use?
+            }
+            printf("%c", seq->seq.s[j]);
+            j++;
+            k++;
+            if (k > 0) {
+                 if (k%WRAP==0) printf("\n");
+                 k = 0;
             }
         }
-        printf("\n");
     }
 
     // Read the rest of the sequences
-    while ((m = kseq_read(seq)) >= 0) {
+    while ((kseq_read(seq)) >= 0) {
         if (seq->name.s) printf(">%s\n", seq->name.s);
-        for (i=0; i < seqlength; i++) {
-            printf("%c", seq->seq.s[i]);
-            if (i > 0) {
-                if (i%WRAP==0) printf("\n");
+        if (seq->seq.s) {
+            k=0;
+            for (j=c=0; c < samplesize; ++c) {
+                for ( ; j < random[c] ; ++j) {
+                    //getchar();
+                    //xxx(seq->seq.s[j]); // what is correct function xxx to use?
+                }
+                printf("%c", seq->seq.s[j]);
+                j++;
+                k++;
+                if (k > 0) {
+                    if (k%WRAP==0) {
+                        printf("\n");
+                        k = 0;
+                    }
+                }
             }
         }
         printf("\n");
@@ -101,8 +122,7 @@ int main(int argc, char *argv[]) {
 
     kseq_destroy(seq);
     gzclose(fp);
-    free(seqnrarray);
-    //free(samplenrarray);
+    free(random);
 
     return(EXIT_SUCCESS);
 }
