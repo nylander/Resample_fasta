@@ -5,7 +5,7 @@
  *
  * Usage: ./prog infile.fas > outfile.fas
  *
- * Version: Thu 30 Nov 2017 06:24:08 PM CET
+ * Version: Thu 07 Dec 2017 12:44:34 PM CET
  * By: Johan.Nylander@{nbis|nrm}.se
  *
  * TODO: rewrite so user can ask for a specific
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     kseq_t *seq;
     long int seqlength;
     long int c, i, j, n;
-    int k;
+    //int k;
     long int samplesize;
     long int *random;
 
@@ -80,41 +80,40 @@ int main(int argc, char *argv[]) {
     // Print first sequence
     if (seq->name.s) printf(">%s\n", seq->name.s);
     if (seq->seq.s) {
-        k=0;
+        //k=0;
         for (j=c=0; c < samplesize; ++c) {
             for ( ; j < random[c] ; ++j) {
-                //getchar();
-                //xxx(seq->seq.s[j]); // what is correct function xxx to use?
+                scanf(seq->seq.s[j]); // what is correct function xxx to use?
             }
             printf("%c", seq->seq.s[j]);
             j++;
-            k++;
-            if (k > 0) {
-                 if (k%WRAP==0) printf("\n");
-                 k = 0;
-            }
+            //k++;
+            //if (k > 0) {
+            //     if (k%WRAP==0) printf("\n");
+            //     k = 0;
+            //}
         }
     }
-
+    printf("did first sequence\n");
+    getchar();
     // Read the rest of the sequences
     while ((kseq_read(seq)) >= 0) {
         if (seq->name.s) printf(">%s\n", seq->name.s);
         if (seq->seq.s) {
-            k=0;
+            //k=0;
             for (j=c=0; c < samplesize; ++c) {
                 for ( ; j < random[c] ; ++j) {
-                    //getchar();
                     //xxx(seq->seq.s[j]); // what is correct function xxx to use?
                 }
                 printf("%c", seq->seq.s[j]);
                 j++;
-                k++;
-                if (k > 0) {
-                    if (k%WRAP==0) {
-                        printf("\n");
-                        k = 0;
-                    }
-                }
+                //k++;
+                //if (k > 0) {
+                //    if (k%WRAP==0) {
+                //        printf("\n");
+                //        k = 0;
+                //    }
+                //}
             }
         }
         printf("\n");
