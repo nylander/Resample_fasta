@@ -34,6 +34,7 @@ Another approach might be the ["inside-out version of the Fisher-Yates shuffle"]
 
 ## Links
 
+- [https://gist.github.com/matugm/4708222](https://gist.github.com/matugm/4708222)
 - [http://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)Randomization.html](http://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)Randomization.html)
 - [https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement](https://codegolf.stackexchange.com/questions/4772/random-sampling-without-replacement)
 - [http://www.geeksforgeeks.org/reservoir-sampling/](http://www.geeksforgeeks.org/reservoir-sampling/)
