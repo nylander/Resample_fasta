@@ -1,7 +1,14 @@
-// https://gist.githubusercontent.com/matugm/4708222/raw/ac5a5804c824e18c4ef1b1c760f54686adf602a1/array.h
+/*
+ * dynarray.h
+ * Mon 11 dec 2017 15:31:45
+ * Johan.Nylander@{nbis|nrm}.se
+ * Source: https://gist.githubusercontent.com/matugm/4708222/raw/ac5a5804c824e18c4ef1b1c760f54686adf602a1/array.h
+ *
+ */
 
-#ifndef ARRAY_H_
-#define ARRAY_H_
+
+#ifndef DYNARRAY_H
+#define DYNARRAY_H
 
 struct ArrayData *initArray();
 int addElement(struct ArrayData *array, int number);
@@ -13,4 +20,4 @@ struct ArrayData {
 	int size;
 };
 
-#endif /* ARRAY_H_ */
+#endif /* DYNARRAY_H */

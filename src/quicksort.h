@@ -1,5 +1,13 @@
-// quicksort.h
-// source: https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C
+/*
+ * quicksort.h
+ * Mon 11 dec 2017 15:31:45
+ * Johan.Nylander@{nbis|nrm}.se
+ * Source: https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C
+ *
+ */
+
+#ifndef QUICKSORT_H
+#define QUICKSORT_H
 
 #include <stdio.h>
 
@@ -46,3 +54,5 @@ void quicksort(long int *A, long int len) {
 //  
 //   return 0;
 // }
+
+#endif /* !QUICKSORT_H */
