@@ -8,7 +8,7 @@ CFLAGS = -Wall -O3
 OBJ = resample_fasta.o
 PROG = refas
 RM = rm -v
-INFILE = infile
+INFILE = ../data/infile
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
