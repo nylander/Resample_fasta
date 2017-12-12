@@ -1,7 +1,8 @@
 CC = gcc
+GDB = gdb
 CFLAGS = -Wall -O3
 OBJ = resample_fasta.o
-PROG = resample_fasta
+PROG = refas
 RM = rm -v
 INFILE = infile
 
@@ -14,6 +15,7 @@ $(PROG): $(OBJ)
 debug: CFLAGS += -g
 
 debug: $(PROG)
+	$(GDB) ./$(PROG)
 
 test: $(PROG) $(INFILE)
 	./$(PROG) $(INFILE)

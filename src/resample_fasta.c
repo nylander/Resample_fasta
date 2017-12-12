@@ -2,17 +2,20 @@
  * resample_fasta.c
  *
  * Description:
- *     Subsample a fraction (default 0.5)
- *     of an alignment in fasta format.
+ *     Subsample a fraction (default 0.5) of a
+ *     multiple-sequence alignment in fasta format.
+ *     Reads a file, prints to STDOUT.
+ *     No extensive error checking: Caveat emptor!
+ *     Change fraction to sample ("XFRAC") below.
  *
  * Compile:
- *     gcc -Wall -O3 -o resample_fasta resample_fasta.c
+ *     gcc -Wall -O3 -o refas resample_fasta.c
  *
  * Usage:
- *     ./resample_fasta infile.fas > outfile.fas
+ *     ./refas infile > outfile.fas
  *
  * Version:
- *    12/12/2017 01:58:47 AM
+ *    12/12/2017 09:41:15 AM
  * 
  * By:
  *     Johan.Nylander@{nbis|nrm}.se
@@ -35,26 +38,19 @@ int main(int argc, char *argv[]) {
     long int samplesize;
     long int *random;
     long int im, in;
-    //double frac;
     int inheader;
     int ngts;
     int r;
     int k;
     long int j, c;
 
-    if (argc == 1 && argc > 3) {
-        fprintf(stderr, "Usage: %s <sample fraction> <in.fas>\n", argv[0]);
+    if (argc == 1) {
+        fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
         return 1;
     }
-    else if (argc == 2) {
-        fprintf(stderr, "Using default resampling fraction (%f)\n", XFRAC);
-        fp = fopen(argv[1], "r");
-    }
-    else if (argc == 3) {
-        fprintf(stderr, "Using resampling fraction (%s)\n",  argv[1]);
-        fp = fopen(argv[2], "r");
-    }
-    
+
+    fp = fopen(argv[1], "r");
+
     if(fp == 0) {
         perror("fopen");
         exit(1);
@@ -81,7 +77,7 @@ int main(int argc, char *argv[]) {
             }
         }
         else {
-            if (r != '\n') {
+            if (r != '\n') {// should also ignore white space: r != '\n' && r != ' '?
                 seqlength++;
             }
         }
@@ -91,7 +87,8 @@ int main(int argc, char *argv[]) {
 
     samplesize = (long int)(seqlength * XFRAC);
 
-    // Allocate for array. Possible for large data? Limit?
+    // Allocate for array. Possible for how large data? Limit?
+    // It worked with sample size of 
     random = malloc(sizeof(long int) * samplesize);
 
     if (!random) {
@@ -158,7 +155,9 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
+    printf("\n");
+    
+    fclose(fp);
     free(random);
 
 	return 0;
