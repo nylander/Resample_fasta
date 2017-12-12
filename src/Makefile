@@ -1,12 +1,11 @@
 CC = gcc
 CFLAGS = -Wall -O3
-DEPS = dynarray.h 
-OBJ = dynarray.o main.o
-PROG = prog3
+OBJ = resample_fasta.o
+PROG = resample_fasta
 RM = rm -v
 INFILE = infile
 
-%.o: %.c $(DEPS)
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(PROG): $(OBJ)

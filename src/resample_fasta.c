@@ -1,12 +1,15 @@
 /*
- * main.c
+ * resample_fasta.c
  *
  * Description:
  *     Subsample a fraction (default 0.5)
  *     of an alignment in fasta format.
  *
+ * Compile:
+ *     gcc -Wall -O3 -o resample_fasta resample_fasta.c
+ *
  * Usage:
- *     ./prog infile.fas > outfile.fas
+ *     ./resample_fasta infile.fas > outfile.fas
  *
  * Version:
  *    12/12/2017 01:31:43 AM
