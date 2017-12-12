@@ -9,38 +9,34 @@
  *     ./prog infile.fas > outfile.fas
  *
  * Version:
- *    Mon 11 dec 2017 17:11:10
+ *    12/12/2017 01:31:43 AM
  * 
  * By:
  *     Johan.Nylander@{nbis|nrm}.se
  *
 */
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
-#include "dynarray.h"
-#include "random.h"
-#include "shuffle.h"
-#include "quicksort.h"
 
 #define XFRAC 0.5  // fraction to sample
 #define WRAP 60    // line wrap for fasta seq
 
 
-/*************************************************************
- * main
- *************************************************************/
 int main(int argc, char *argv[]) {
 
 	FILE * fp;
-	struct ArrayData *seqarray;
     long int seqlength;
+    long int seqlen;
     long int samplesize;
     long int *random;
+    long int im, in;
     int inheader;
     int ngts;
     int r;
+    int k;
+    long int j, c;
 
     if (argc == 1) {
         fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
@@ -53,51 +49,38 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-	seqarray = initArray(); // Growable array to keep a sequence
-
-    // Test to read the first sequence only
+    // Read the first sequence to get sequence length
     inheader = 0;
     ngts = 0;
     seqlength = 0;
     while ((r = fgetc(fp)) != EOF) {
         if (inheader == 1) {
-            if (r == '\n') { // print newline after header
-                printf("%c", (char) r);
+            if (r == '\n') {
                 inheader = 0;
-            }
-            else {           // print any character in header
-                printf("%c", (char) r);
             }
         }
         else if (r == '>') {
             ++ngts;
-            if (ngts > 1) {  // break on second fasta header
+            if (ngts > 1) {
+                ungetc(r, fp);
                 break;
             }
-            else {           // print '>' sign
-                printf("\n%c", (char) r);
+            else {
                 inheader = 1;
             }
         }
-        else {               // sequence characters (except newline)
+        else {
             if (r != '\n') {
-                //printf("%c", (char) r);
                 seqlength++;
-                addElement(seqarray, (char) r); // add char to array
             }
         }
     }
 
-    // Do we have an array?
-    //int i, get;
-    //for(i = 0; i < seqlength; i++){
-    //    get = getElement(seqarray, i);
-  	//	printf("%c\n", (char) get);
-    //}
+    rewind(fp);
 
     samplesize = (long int)(seqlength * XFRAC);
 
-    // allocate for array 
+    // Allocate for array. Possible for large data? Limit?
     random = malloc(sizeof(long int) * samplesize);
 
     if (!random) {
@@ -105,54 +88,67 @@ int main(int argc, char *argv[]) {
         abort();
     }
 
-    // fill array with 0,1,2,...,seglength-1
-    //for(int i=0; i < seglength; i++) {
-    //    random[i] = i;
-    //}
-    
-    // then, shuffle the first samplesize entries of the array
-    //part_shuffle(random, seglength, samplesize);
+    srand(time(NULL));
 
-    // Alternatively, fill the whole array with random numbers
-    // Need to make sure, however, that they are unique before sorting!
-    //for(int i=0; i < samplesize; i++) {
-    //    random[i] = randomAM(seqlength);
-    //    //printf("in unsorted random:%ld\n", random[i]);
-    //}
+    // Use Knuth's algorithm to get sorted unique random numbers
+    for (in = im = 0; in < seqlength && im < samplesize; ++in) {
+        long int rn = seqlength - in;
+        long int rm = samplesize - im;
+        if (rand() % rn < rm) {
+            random[im++] = in;
+        }
+    }
 
-    // I only want to sort the first samplesize items of random
+    // Read file again
+    inheader = 0;
+    ngts = 0;
+    seqlen = 0;
+    j = c = k = 0;
+    while ((r = fgetc(fp)) != EOF) {
+        if (inheader == 1) {
+            if (r == '\n') { // print newline after header
+                printf("%c", (char) r);
+                inheader = 0;
+            }
+            else { // print any character in header
+                printf("%c", (char) r);
+            }
+        }
+        else if (r == '>') {
+            ++ngts;
+            if (ngts > 1) {
+                if (seqlen != seqlength) { // test if equal length to first seq
+                    printf("Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
+                    free(random);
+                    return 1;
+                }
+                ngts = 0;
+            }
+            printf("\n%c", (char) r);
+            inheader = 1;
+            j = c = k = 0;
+            seqlen = 0;
+        }
+        else { // r is a sequence character, or a newline in the sequence
+            if (r != '\n') {
+                seqlen++;
+                if (j == random[c]) {
+                    printf("%c", (char) r);
+                    if (k > 0) {
+                        if (k%WRAP == 0) {
+                            printf("\n");
+                            k = 0;
+                        }
+                    }
+                    k++;
+                    c++;
+                }
+                j++;
+            }
+        }
+    }
 
-    // sort random in place. I need, however, to sort only 
-    // the first samplesize items of random, not the whole array
-
-    quicksort(random, samplesize);
-    //for(int j=0; j < samplesize; j++) {
-    //    printf("in sorted random:%ld\n", random[j]);
-    //}
-
-    //// Print first sequence
-    //// Make sure to save sequence length
-    //for (j=c=0; c < samplesize; ++c) {
-    //    for ( ; j < random[c] ; ++j) {
-    //        get = getElement(seqarray, j);
-    //    }
-    //    get = getElement(seq, j);
-    //    printf("%c", (char) get);
-    //    j++;
-    //    k++;
-    //    if (k > 0) {
-    //        if (k%WRAP == 0) {
-    //            printf("\n");
-    //            k = 0;
-    //        }
-    //    }
-    //}
-
-    // Print the rest of the sequences
-
-
-	free(seqarray->pointer);
-	free(seqarray);
+    free(random);
 
 	return 0;
 }

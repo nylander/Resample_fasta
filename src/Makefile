@@ -1,10 +1,10 @@
 CC = gcc
 CFLAGS = -Wall -O3
-DEPS = dynarray.h random.h quicksort.h
+DEPS = dynarray.h 
 OBJ = dynarray.o main.o
 PROG = prog3
 RM = rm -v
-INFILE = infile2
+INFILE = infile
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -12,9 +12,12 @@ INFILE = infile2
 $(PROG): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
-clean:
-	$(RM) $(OBJ) $(PROG)
+debug: CFLAGS += -g
+
+debug: $(PROG)
 
 test: $(PROG) $(INFILE)
 	./$(PROG) $(INFILE)
 
+clean:
+	$(RM) $(OBJ) $(PROG)

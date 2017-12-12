@@ -11,13 +11,13 @@
 #define DYNARRAY_H
 
 struct ArrayData *initArray();
-int addElement(struct ArrayData *array, int number);
-int getElement(struct ArrayData *array, int index);
+int addElement(struct ArrayData *array, long int number);
+int getElement(struct ArrayData *array, long int index);
 
 struct ArrayData {
-  int *pointer;
-  int counter;
-	int size;
+    int *pointer;
+    long int counter;
+    long int size;
 };
 
 #endif /* DYNARRAY_H */
