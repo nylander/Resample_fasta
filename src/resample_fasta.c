@@ -12,7 +12,7 @@
  *     ./resample_fasta infile.fas > outfile.fas
  *
  * Version:
- *    12/12/2017 01:31:43 AM
+ *    12/12/2017 01:58:47 AM
  * 
  * By:
  *     Johan.Nylander@{nbis|nrm}.se
@@ -35,18 +35,26 @@ int main(int argc, char *argv[]) {
     long int samplesize;
     long int *random;
     long int im, in;
+    //double frac;
     int inheader;
     int ngts;
     int r;
     int k;
     long int j, c;
 
-    if (argc == 1) {
-        fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
+    if (argc == 1 && argc > 3) {
+        fprintf(stderr, "Usage: %s <sample fraction> <in.fas>\n", argv[0]);
         return 1;
     }
-
-    fp = fopen(argv[1], "r");
+    else if (argc == 2) {
+        fprintf(stderr, "Using default resampling fraction (%f)\n", XFRAC);
+        fp = fopen(argv[1], "r");
+    }
+    else if (argc == 3) {
+        fprintf(stderr, "Using resampling fraction (%s)\n",  argv[1]);
+        fp = fopen(argv[2], "r");
+    }
+    
     if(fp == 0) {
         perror("fopen");
         exit(1);
