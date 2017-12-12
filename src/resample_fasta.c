@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
                     free(random);
                     exit(EXIT_FAILURE);
                 }
-                ngts = 0;
+                ngts = 1;
             }
             printf("%c", (char) r);
             inheader = 1;
