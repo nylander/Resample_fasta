@@ -5,8 +5,10 @@
  *     Subsample a fraction (default 0.5) of a
  *     multiple-sequence alignment in fasta format.
  *     Reads a file, prints to STDOUT.
- *     No extensive error checking: Caveat emptor!
  *     Change fraction to sample ("XFRAC") below.
+ *     Reminder: sequences need to be aligned
+ *     (same length).
+ *     No extensive error checking: Caveat emptor!
  *
  * Compile:
  *     gcc -Wall -O3 -o refas resample_fasta.c
@@ -14,11 +16,12 @@
  * Usage:
  *     ./refas infile > outfile.fas
  *
+ * By:
+ *     Johan.Nylander@{nbis|nrm}.se
+ *
  * Version:
  *    12/12/2017 09:41:15 AM
  * 
- * By:
- *     Johan.Nylander@{nbis|nrm}.se
  *
 */
 
@@ -29,7 +32,6 @@
 #define XFRAC 0.5  // fraction to sample
 #define WRAP 60    // line wrap for fasta seq
 
-
 int main(int argc, char *argv[]) {
 
 	FILE * fp;
@@ -38,22 +40,21 @@ int main(int argc, char *argv[]) {
     long int samplesize;
     long int *random;
     long int im, in;
+    long int j, c;
     int inheader;
     int ngts;
-    int r;
-    int k;
-    long int j, c;
+    int r, k;
 
     if (argc == 1) {
-        fprintf(stderr, "Usage: %s <in.fas>\n", argv[0]);
-        return 1;
+        printf("Usage: %s <infle>\n", argv[0]);
+        exit(EXIT_SUCCESS);
     }
 
     fp = fopen(argv[1], "r");
 
     if(fp == 0) {
-        perror("fopen");
-        exit(1);
+        perror("Error: failed in opening file");
+        exit(EXIT_FAILURE);
     }
 
     // Read the first sequence to get sequence length
@@ -69,7 +70,6 @@ int main(int argc, char *argv[]) {
         else if (r == '>') {
             ++ngts;
             if (ngts > 1) {
-                ungetc(r, fp);
                 break;
             }
             else {
@@ -87,13 +87,12 @@ int main(int argc, char *argv[]) {
 
     samplesize = (long int)(seqlength * XFRAC);
 
-    // Allocate for array. Possible for how large data? Limit?
-    // It worked with sample size of 
+    // Allocate for array. Possible for how large data?
     random = malloc(sizeof(long int) * samplesize);
 
     if (!random) {
         perror("Error allocating memory for array random");
-        abort();
+        exit(EXIT_FAILURE);
     }
 
     srand(time(NULL));
@@ -125,6 +124,7 @@ int main(int argc, char *argv[]) {
         else if (r == '>') {
             ++ngts;
             if (ngts > 1) {
+                printf("\n");
                 if (seqlen != seqlength) { // test if equal length to first seq
                     printf("Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
                     free(random);
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
                 }
                 ngts = 0;
             }
-            printf("\n%c", (char) r);
+            printf("%c", (char) r);
             inheader = 1;
             j = c = k = 0;
             seqlen = 0;
@@ -160,6 +160,6 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     free(random);
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }
 

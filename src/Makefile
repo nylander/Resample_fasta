@@ -1,3 +1,7 @@
+# Makefile for resample_fasta.c
+# Tue 12 Dec 2017 10:44:59 AM CET
+# Johan.Nylander@{nrm|nbis}.se
+
 CC = gcc
 GDB = gdb
 CFLAGS = -Wall -O3
@@ -18,7 +22,9 @@ debug: $(PROG)
 	$(GDB) ./$(PROG)
 
 test: $(PROG) $(INFILE)
-	./$(PROG) $(INFILE)
+	@ ./$(PROG) $(INFILE)
 
 clean:
-	$(RM) $(OBJ) $(PROG)
+	@ $(RM) $(OBJ) $(PROG)
+
+
