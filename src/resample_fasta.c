@@ -34,7 +34,7 @@
 
 int main(int argc, char *argv[]) {
 
-	FILE * fp;
+    FILE * fp;
     long int seqlength;
     long int seqlen;
     long int samplesize;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
                 if (seqlen != seqlength) { // test if equal length to first seq
                     printf("Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
                     free(random);
-                    return 1;
+                    exit(EXIT_FAILURE);
                 }
                 ngts = 0;
             }
@@ -160,6 +160,6 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     free(random);
 
-	exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
 
