@@ -20,7 +20,7 @@
  *     Johan.Nylander@{nbis|nrm}.se
  *
  * Version:
- *    12/12/2017 09:41:15 AM
+ *    01/11/2018 02:54:28 PM
  * 
  *
 */
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
         }
         else { // r is a sequence character, or a newline in the sequence
             if (r != '\n') {
-                seqlen++;
+                ++seqlen;
                 if (j == random[c]) {
                     printf("%c", (char) r);
                     if (k > 0) {
@@ -148,10 +148,10 @@ int main(int argc, char *argv[]) {
                             k = 0;
                         }
                     }
-                    k++;
-                    c++;
+                    ++k;
+                    ++c;
                 }
-                j++;
+                ++j;
             }
         }
     }
