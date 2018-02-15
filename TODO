@@ -8,7 +8,7 @@
 - [x] Check and warn (die) if sequences are not of same length
 - [x] Check for and ignore white space characters
 - [ ] Appropriate data types (we need to be able to handle large numbers)?
-- [ ] Compiler options?
+- [x] Compiler options?
 - [ ] packaging
 - [ ] Limits: how large data and where are the bottle necks?
       I've managed to read fasta with 1,033,005,693 bp per sequence (6% of 65856540 kB RAM)
