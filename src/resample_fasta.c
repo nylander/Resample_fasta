@@ -6,7 +6,7 @@
  *     multiple-sequence alignment in fasta format.
  *     Reads a file, prints to STDOUT.
  *     Change fraction to sample ("XFRAC") below.
- *     Reminder: sequences need to be aligned
+ *     Reminder: Sequences need to be aligned
  *     (same length).
  *     No extensive error checking: Caveat emptor!
  *
@@ -18,11 +18,12 @@
  *
  * By:
  *     Johan.Nylander@{nbis|nrm}.se
- *     Thanks to: Andreas Kähäri
  *
  * Version:
  *    Thu 15 Feb 2018 10:28:22 AM CET
  * 
+ * Thanks to:
+ *    Andreas Kähäri
  *
 */
 
@@ -120,13 +121,9 @@ int main(int argc, char *argv[]) {
     j = c = k = 0;
     while ((r = fgetc(fp)) != EOF) {
         if (inheader == 1) {
-            if (r == '\n') { // print newline after header
-                //printf("%c", (char) r);
+            if (r == '\n') {
                 inheader = 0;
             }
-            //else { // print any character in header
-            //    printf("%c", (char) r);
-            //}
             putchar(r);
         }
         else if (r == '>') {
