@@ -6,7 +6,7 @@
     - [ ] Arg for specifying sample fraction
     - [ ] Arg with desired output length. Handle the case where user ask for longer than input length.
 - [x] Check and warn (die) if sequences are not of same length
-- [ ] Check for and ignore white space characters
+- [x] Check for and ignore white space characters
 - [ ] Appropriate data types (we need to be able to handle large numbers)?
 - [ ] Compiler options?
 - [ ] packaging

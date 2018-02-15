@@ -18,19 +18,21 @@
  *
  * By:
  *     Johan.Nylander@{nbis|nrm}.se
+ *     Thanks to: Andreas Kähäri
  *
  * Version:
- *    01/11/2018 02:54:28 PM
+ *    Thu 15 Feb 2018 10:28:22 AM CET
  * 
  *
 */
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
-#define XFRAC 0.5  // fraction to sample
-#define WRAP 60    // line wrap for fasta seq
+#define XFRAC 0.5 // fraction to sample
+#define WRAP 60   // line wrap for fasta seq
 
 int main(int argc, char *argv[]) {
 
@@ -38,7 +40,7 @@ int main(int argc, char *argv[]) {
     long int seqlength;
     long int seqlen;
     long int samplesize;
-    long int *random;
+    long int *randvals;
     long int im, in;
     long int j, c;
     int inheader;
@@ -46,13 +48,13 @@ int main(int argc, char *argv[]) {
     int r, k;
 
     if (argc == 1) {
-        printf("Usage: %s <infle>\n", argv[0]);
-        exit(EXIT_SUCCESS);
+        fprintf(stderr, "Usage: %s <infle>\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
     fp = fopen(argv[1], "r");
 
-    if(fp == 0) {
+    if(fp == NULL) {
         perror("Error: failed in opening file");
         exit(EXIT_FAILURE);
     }
@@ -77,10 +79,15 @@ int main(int argc, char *argv[]) {
             }
         }
         else {
-            if (r != '\n') {// should also ignore white space: r != '\n' && r != ' '?
+            if (!isspace(r)) {
                 seqlength++;
             }
         }
+    }
+
+    if (seqlength == 0) {
+        fprintf(stderr, "Error: No sequences found in file.\n");
+        exit(EXIT_FAILURE);
     }
 
     rewind(fp);
@@ -88,10 +95,10 @@ int main(int argc, char *argv[]) {
     samplesize = (long int)(seqlength * XFRAC);
 
     // Allocate for array. Possible for how large data?
-    random = malloc(sizeof(long int) * samplesize);
+    randvals = malloc(samplesize * sizeof *randvals);
 
-    if (!random) {
-        perror("Error allocating memory for array random");
+    if (randvals == NULL) {
+        perror("Error allocating memory for array randvals");
         exit(EXIT_FAILURE);
     }
 
@@ -102,7 +109,7 @@ int main(int argc, char *argv[]) {
         long int rn = seqlength - in;
         long int rm = samplesize - im;
         if (rand() % rn < rm) {
-            random[im++] = in;
+            randvals[im++] = in;
         }
     }
 
@@ -114,25 +121,26 @@ int main(int argc, char *argv[]) {
     while ((r = fgetc(fp)) != EOF) {
         if (inheader == 1) {
             if (r == '\n') { // print newline after header
-                printf("%c", (char) r);
+                //printf("%c", (char) r);
                 inheader = 0;
             }
-            else { // print any character in header
-                printf("%c", (char) r);
-            }
+            //else { // print any character in header
+            //    printf("%c", (char) r);
+            //}
+            putchar(r);
         }
         else if (r == '>') {
             ++ngts;
             if (ngts > 1) {
-                printf("\n");
+                putchar('\n');
                 if (seqlen != seqlength) { // test if equal length to first seq
-                    printf("Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
-                    free(random);
+                    fprintf(stderr, "Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
+                    free(randvals);
                     exit(EXIT_FAILURE);
                 }
                 ngts = 1;
             }
-            printf("%c", (char) r);
+            putchar(r);
             inheader = 1;
             j = c = k = 0;
             seqlen = 0;
@@ -140,11 +148,11 @@ int main(int argc, char *argv[]) {
         else { // r is a sequence character, or a newline in the sequence
             if (r != '\n') {
                 ++seqlen;
-                if (j == random[c]) {
-                    printf("%c", (char) r);
+                if (j == randvals[c]) {
+                    putchar(r);
                     if (k > 0) {
-                        if (k%WRAP == 0) {
-                            printf("\n");
+                        if (k % WRAP == 0) {
+                            putchar('\n');
                             k = 0;
                         }
                     }
@@ -155,11 +163,11 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    printf("\n");
+    putchar('\n');
     
     fclose(fp);
-    free(random);
+    free(randvals);
 
-    exit(EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }
 

@@ -1,20 +1,24 @@
 # Makefile for resample_fasta.c
-# Tue 12 Dec 2017 10:44:59 AM CET
+# Thu 15 Feb 2018 10:43:56 AM CET
 # Johan.Nylander@{nrm|nbis}.se
 
-CC = gcc
-GDB = gdb
+CC     = gcc
+GDB    = gdb
 CFLAGS = -Wall -O3
-OBJ = resample_fasta.o
-PROG = refas
-RM = rm -v
+SRC    = resample_fasta.c
+OBJ    = $(SRC:%.c=%.o)
+PROG   = refas
+RM     = rm -f
 INFILE = ../data/infile
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+.PHONY: all debug test clean
+
+all: $(PROG)
+
+$(OBJ): $(SRC)
 
 $(PROG): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $(OBJ)
 
 debug: CFLAGS += -g
 
