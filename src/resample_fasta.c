@@ -36,7 +36,7 @@
 
 int main(int argc, char *argv[]) {
 
-    FILE * fp;
+    FILE *fp;
     long int seqlength;
     long int seqlen;
     long int samplesize;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
     fp = fopen(argv[1], "r");
 
-    if(fp == NULL) {
+    if (fp == NULL) {
         perror("Error: failed in opening file");
         exit(EXIT_FAILURE);
     }
@@ -134,7 +134,9 @@ int main(int argc, char *argv[]) {
             if (ngts > 1) {
                 putchar('\n');
                 if (seqlen != seqlength) { // test if equal length to first seq
-                    fprintf(stderr, "Error! Seq length not equal (%li vs %li).\nAborting\n", seqlen, seqlength);
+                    fprintf(stderr,
+                        "Error! Seq length not equal (%li vs %li).\nAborting\n",
+                        seqlen, seqlength);
                     free(randvals);
                     exit(EXIT_FAILURE);
                 }
