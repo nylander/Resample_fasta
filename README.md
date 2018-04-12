@@ -9,6 +9,8 @@ Sample random columns from a set of aligned fasta formatted sequences.
 That is, sample positions in first sequence, then make sure to
 sample the same positions in all consecutive sequences as well.
 
+Written with low memory requirements and speed in mind.
+
 ## Compile
 
     cd src
