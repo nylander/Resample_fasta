@@ -23,7 +23,7 @@
  *    Thu 15 Feb 2018 10:28:22 AM CET
  * 
  * Thanks to:
- *    Andreas Kähäri
+ *    Andreas Kähäri for code revision
  *
 */
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     int r, k;
 
     if (argc == 1) {
-        fprintf(stderr, "Usage: %s <infle>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <infile>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
                 putchar('\n');
                 if (seqlen != seqlength) { // test if equal length to first seq
                     fprintf(stderr,
-                        "Error! Seq length not equal (%li vs %li).\nAborting\n",
+                        "Error! Sequence lengths not equal (%li vs %li).\nAborting\n",
                         seqlen, seqlength);
                     free(randvals);
                     exit(EXIT_FAILURE);
