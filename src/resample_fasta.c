@@ -4,30 +4,28 @@
  * Description:
  *     Subsample a fraction (default 0.5) of a
  *     multiple-sequence alignment in fasta format.
- *     Reads a file, prints to STDOUT.
- *     Change fraction to sample ("XFRAC") below.
  *     Reminder: Sequences need to be aligned
  *     (same length).
  *     No extensive error checking: Caveat emptor!
  *
  * Compile:
- *     gcc -Wall -O3 -o refas resample_fasta.c
+ *     gcc -Wall -O3 -o refast resample_fasta.c
  *
  * Usage:
- *     ./refas infile > outfile.fas
+ *     ./refast infile > outfile.fas
  *
  * By:
- *     Johan.Nylander@{nbis|nrm}.se
+ *     Johan.Nylander@nrm.se
  *
- * Version:
- *    Thu 15 Feb 2018 10:28:22 AM CET
- * 
+ * Revision:
+ *    Fri 28 mar 2025 16:20:21
+ *
  * Thanks to:
- *    Andreas Kähäri for code revision
+ *    Andreas Kusalananda Kähäri for code revision
  *
  * License and copyright:
- *    Copyright (c) 2018-2020 Johan Nylander
-                  
+ *    Copyright (c) 2018-2025 Johan Nylander
+
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
  *    files (the "Software"), to deal in the Software without
@@ -36,10 +34,10 @@
  *    sell copies of the Software, and to permit persons to whom the
  *    Software is furnished to do so, subject to the following
  *    conditions:
- *    
+ *
  *    The above copyright notice and this permission notice shall be
  *    included in all copies or substantial portions of the Software.
- *    
+ *
  *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  *    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -54,12 +52,28 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+#include <libgen.h>
 
-#define XFRAC 0.5 // fraction to sample
-#define WRAP 60   // line wrap for fasta seq
+#define DEFAULT_XFRAC 0.5 // default fraction to sample
+#define DEFAULT_WRAP 60   // default line wrap for fasta seq
+#define VERSION "0.2"   // version information
+
+void print_help(const char *prog_name) {
+    printf("Usage: %s [options] <infile>\n", prog_name);
+    printf("Options:\n");
+    printf("  -x fraction  Set the fraction to sample (default: %.2f)\n", DEFAULT_XFRAC);
+    printf("  -w wrap      Set the line wrap length (default: %d)\n", DEFAULT_WRAP);
+    printf("  -h           Show this help message\n");
+    printf("  -v           Show version information\n");
+    printf("  infile is an alignment in fasta format\n");
+}
+
+void print_version(const char *prog_name) {
+    printf("%s version %s\n", basename((char *)prog_name), VERSION);
+}
 
 int main(int argc, char *argv[]) {
-
     FILE *fp;
     long int seqlength;
     long int seqlen;
@@ -71,12 +85,36 @@ int main(int argc, char *argv[]) {
     int ngts;
     int r, k;
 
-    if (argc == 1) {
-        fprintf(stderr, "Usage: %s <infile>\n", argv[0]);
+    double xfrac = DEFAULT_XFRAC;
+    int wrap = DEFAULT_WRAP;
+
+    int opt;
+    while ((opt = getopt(argc, argv, "x:w:hv")) != -1) {
+        switch (opt) {
+            case 'x':
+                xfrac = atof(optarg);
+                break;
+            case 'w':
+                wrap = atoi(optarg);
+                break;
+            case 'h':
+                print_help(argv[0]);
+                exit(EXIT_SUCCESS);
+            case 'v':
+                print_version(argv[0]);
+                exit(EXIT_SUCCESS);
+            default:
+                print_help(argv[0]);
+                exit(EXIT_FAILURE);
+        }
+    }
+
+    if (optind >= argc) {
+        print_help(argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    fp = fopen(argv[1], "r");
+    fp = fopen(argv[optind], "r");
 
     if (fp == NULL) {
         perror("Error: failed in opening file");
@@ -116,7 +154,7 @@ int main(int argc, char *argv[]) {
 
     rewind(fp);
 
-    samplesize = (long int)(seqlength * XFRAC);
+    samplesize = (long int)(seqlength * xfrac);
 
     // Allocate for array. Possible for how large data?
     randvals = malloc(samplesize * sizeof *randvals);
@@ -173,7 +211,7 @@ int main(int argc, char *argv[]) {
                 if (j == randvals[c]) {
                     putchar(r);
                     if (k > 0) {
-                        if (k % WRAP == 0) {
+                        if (k % wrap == 0) {
                             putchar('\n');
                             k = 0;
                         }
@@ -186,10 +224,9 @@ int main(int argc, char *argv[]) {
         }
     }
     putchar('\n');
-    
+
     fclose(fp);
     free(randvals);
 
     return EXIT_SUCCESS;
 }
-

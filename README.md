@@ -1,7 +1,7 @@
 # Resample FASTA alignments
 
-- Thu 15 Feb 2018 10:42:24 AM CET 
-- Johan.Nylander@{nrm|nbis}.se
+- Last modified: fre mar 28, 2025  05:24
+- Sign: Johan Nylander
 
 ## Description
 
@@ -11,20 +11,31 @@ sample the same positions in all consecutive sequences as well.
 
 Written with low memory requirements and speed in mind.
 
-## Compile
+## Install
 
-    cd src
-    make
-    make test
+See file [INSTALL](INSTALL)
 
 ## Run
 
-    ./refas infile > outfile.fas
+    $ refast data/infile > outfile.fas
 
-## Note
+## Help and options
 
-This is work in progress ("proof of concept").
-Currently the resampling fraction is set to 50%. To change this, edit
-the file `resample_fasta.c`, and set a new value for the constant `XFRAC`,
-then recompile.
+    $ refast -h
+    Usage: refast [options] <infile>
+    Options:
+      -x fraction  Set the fraction to sample (default: 0.50)
+      -w wrap      Set the line wrap length (default: 60)
+      -h           Show this help message
+      -v           Show version information
+      infile is an alignment in fasta format
+
+## Scripts
+
+The file [`scripts/resample_fasta.pl`](scripts/resample_fasta.pl) is the first
+implementation.  Still works, but too slow on very large data.
+
+## License and copyright
+
+[MIT License](LICENSE)
 

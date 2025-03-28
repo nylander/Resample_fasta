@@ -1,9 +1,8 @@
-Old/
-refas
-*.o
-7.4M.fas
-syn.fas
-infile1
-infile2
-infile3
-Notes.md
+private/*
+data/7.4M.fas
+data/infile1
+data/infile2
+data/infile3
+data/syn.fas
+build/*
+*.swp

@@ -1,0 +1,27 @@
+INSTALL
+
+Prerequisites: A C-compiler (e.g. `gcc`) and `make`
+
+Clone and compile
+
+    $ git clone https://github.com/nylander/Resample_fasta.git
+    $ cd Resample_fasta
+    $ make
+    $ make test
+    $ sudo make install
+
+Change installation destination by changing PREFIX.
+For example:
+
+    $ PREFIX=$HOME make install
+
+Alt. using `cmake`
+
+    $ cd Resample_fasta
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+    $ make test
+    $ make install
+
